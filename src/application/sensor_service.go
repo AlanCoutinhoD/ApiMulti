@@ -5,6 +5,7 @@ import (
 	"ApiMulti/src/domain/entities"
 	"ApiMulti/src/domain/repositories"
 	"encoding/json"
+	"log"
 	"os"
 	"time"
 )
@@ -24,16 +25,25 @@ func (s *SensorService) ProcessKY026Reading(estado int) error {
 	}
 
 	if err := s.repo.SaveKY026(sensor); err != nil {
+		log.Printf("Error saving KY026 to database: %v", err)
 		return err
 	}
 
 	// Publish to RabbitMQ
 	message, err := json.Marshal(sensor)
 	if err != nil {
+		log.Printf("Error marshaling KY026 message: %v", err)
 		return err
 	}
 
-	return core.PublishMessage(os.Getenv("RABBITMQ_QUEUE_KY026"), message)
+	queueName := os.Getenv("RABBITMQ_QUEUE_KY026")
+	if err := core.PublishMessage(queueName, message); err != nil {
+		log.Printf("Error publishing KY026 message: %v", err)
+		return err
+	}
+
+	log.Printf("Successfully processed KY026 reading: %+v", sensor)
+	return nil
 }
 
 func (s *SensorService) ProcessMQ2Reading(estado int) error {
@@ -43,14 +53,23 @@ func (s *SensorService) ProcessMQ2Reading(estado int) error {
 	}
 
 	if err := s.repo.SaveMQ2(sensor); err != nil {
+		log.Printf("Error saving MQ2 to database: %v", err)
 		return err
 	}
 
 	// Publish to RabbitMQ
 	message, err := json.Marshal(sensor)
 	if err != nil {
+		log.Printf("Error marshaling MQ2 message: %v", err)
 		return err
 	}
 
-	return core.PublishMessage(os.Getenv("RABBITMQ_QUEUE_MQ2"), message)
+	queueName := os.Getenv("RABBITMQ_QUEUE_MQ2")
+	if err := core.PublishMessage(queueName, message); err != nil {
+		log.Printf("Error publishing MQ2 message: %v", err)
+		return err
+	}
+
+	log.Printf("Successfully processed MQ2 reading: %+v", sensor)
+	return nil
 }
