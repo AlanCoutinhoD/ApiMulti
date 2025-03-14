@@ -73,3 +73,21 @@ func (s *SensorService) ProcessMQ2Reading(estado int) error {
 	log.Printf("Successfully processed MQ2 reading: %+v", sensor)
 	return nil
 }
+
+func (s *SensorService) GetAllKY026Readings() ([]*entities.KY026, error) {
+	sensors, err := s.repo.GetAllKY026()
+	if err != nil {
+		log.Printf("Error getting all KY026 readings: %v", err)
+		return nil, err
+	}
+	return sensors, nil
+}
+
+func (s *SensorService) GetAllMQ2Readings() ([]*entities.MQ2, error) {
+	sensors, err := s.repo.GetAllMQ2()
+	if err != nil {
+		log.Printf("Error getting all MQ2 readings: %v", err)
+		return nil, err
+	}
+	return sensors, nil
+}

@@ -8,4 +8,6 @@ type SensorRepository interface {
 	GetKY026ByID(id int) (*entities.KY026, error)
 	GetMQ2ByID(id int) (*entities.MQ2, error)
 	SaveESP32(esp32 *entities.ESP32) error
+	GetAllKY026() ([]*entities.KY026, error)
+	GetAllMQ2() ([]*entities.MQ2, error)
 }

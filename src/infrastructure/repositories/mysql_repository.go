@@ -81,3 +81,41 @@ func (r *MySQLRepository) SaveESP32(esp32 *entities.ESP32) error {
 	esp32.ID = int(id)
 	return nil
 }
+
+func (r *MySQLRepository) GetAllKY026() ([]*entities.KY026, error) {
+	query := "SELECT idKY_026, fecha_activacion, estado FROM KY_026 ORDER BY fecha_activacion DESC"
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sensors []*entities.KY026
+	for rows.Next() {
+		sensor := &entities.KY026{}
+		if err := rows.Scan(&sensor.ID, &sensor.FechaActivacion, &sensor.Estado); err != nil {
+			return nil, err
+		}
+		sensors = append(sensors, sensor)
+	}
+	return sensors, nil
+}
+
+func (r *MySQLRepository) GetAllMQ2() ([]*entities.MQ2, error) {
+	query := "SELECT idMQ_2, fecha_activacion, estado FROM MQ_2 ORDER BY fecha_activacion DESC"
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sensors []*entities.MQ2
+	for rows.Next() {
+		sensor := &entities.MQ2{}
+		if err := rows.Scan(&sensor.ID, &sensor.FechaActivacion, &sensor.Estado); err != nil {
+			return nil, err
+		}
+		sensors = append(sensors, sensor)
+	}
+	return sensors, nil
+}
