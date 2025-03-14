@@ -10,6 +10,21 @@ import (
 	"net/http"
 )
 
+func enableCORS(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		
+		handler(w, r)
+	}
+}
+
 func main() {
 	// Load environment variables
 	if err := godotenv.Load(); err != nil {
@@ -34,9 +49,9 @@ func main() {
 	// Initialize controller
 	controller := controllers.NewSensorController(service)
 
-	// Define routes
-	http.HandleFunc("/api/ky026", controller.HandleKY026)
-	http.HandleFunc("/api/mq2", controller.HandleMQ2)
+	// routes with CORS enabled
+	http.HandleFunc("/api/ky026", enableCORS(controller.HandleKY026))
+	http.HandleFunc("/api/mq2", enableCORS(controller.HandleMQ2))
 
 	// Start server
 	log.Println("Server starting on :8080")
